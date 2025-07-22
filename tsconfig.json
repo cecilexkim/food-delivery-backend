@@ -9,17 +9,18 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "baseUrl": ".",
     "paths": {
       "@config/*": ["src/config/*"],
       "@core/*": ["src/core/*"],
       "@feature/*": ["src/feature/*"],
-      "@vendor.model/*": ["src/feature/vendor/model/*"],
-      "@vendor.service/*": ["src/feature/vendor/service/*"],
-      "@vendor.type/*": ["src/feature/vendor/type/*"],
-      "@util/*": ["src/util/*"]
+      "@generated/*": ["src/generated/*"],
+      "@util/*": ["src/util/*"],
+      "@vendor/*": ["src/feature/vendor/*"]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src/**/*", "codegen.ts", "codegen.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"],
+  "files": ["src/@types/graphql.d.ts"]
 }
