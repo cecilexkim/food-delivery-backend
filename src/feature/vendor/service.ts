@@ -1,14 +1,16 @@
 // src/features/vendors/services/vendor.service.ts
 import { Injectable } from '@nestjs/common'; // Or your DI system
-import VendorModel, { IVendor } from '../models/vendor.model';
+import VendorModel, { IVendor } from './model';
 import {
   CreateVendorInput,
   UpdateVendorInput,
   NearbyVendorsInput,
   SearchVendorsInput,
-} from '../graphql/schemas/inputs';
-import { PaginationInput } from '../../../core/graphql/schema.graphql;
-import { ServiceError } from '../../../core/errors/service.error';
+} from './graphql/schemas.graphql';
+
+import { PaginationInput } from '@generated/graphql/types';
+
+import { ServiceError } from '@core/error/service.error';
 
 @Injectable()
 export class VendorService {
@@ -30,7 +32,7 @@ export class VendorService {
   async updateVendor(id: string, input: UpdateVendorInput): Promise<IVendor> {
     try {
       const updateData: any = { ...input };
-      
+
       if (input.location) {
         updateData.location = {
           type: 'Point',
@@ -41,11 +43,11 @@ export class VendorService {
       const vendor = await VendorModel.findByIdAndUpdate(id, updateData, {
         new: true,
       });
-      
+
       if (!vendor) {
         throw new ServiceError('Vendor not found');
       }
-      
+
       return vendor;
     } catch (error) {
       throw new ServiceError('Failed to update vendor', error);
@@ -66,7 +68,7 @@ export class VendorService {
 
   async getNearbyVendors(
     input: NearbyVendorsInput,
-    pagination: PaginationInput
+    pagination: PaginationInput,
   ): Promise<{ vendors: IVendor[]; count: number }> {
     try {
       const { lat, lng, radius = 5000, cuisineType } = input;
@@ -145,7 +147,7 @@ export class VendorService {
         { $match: { vendorId } },
         { $group: { _id: null, averageRating: { $avg: '$rating' } } },
       ]);
-      
+
       return result[0]?.averageRating || 0;
     } catch (error) {
       throw new ServiceError('Failed to calculate average rating', error);

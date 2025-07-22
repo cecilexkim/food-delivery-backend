@@ -1,16 +1,14 @@
-# schema.graphql
-
 type Query {
   vendors(
-    page: Int = 1, 
-    limit: Int = 10, 
-    cuisine: String, 
-    location: GeoPointInput,
+    page: Int = 1
+    limit: Int = 10
+    cuisine: String
+    location: GeoPointInput
     radius: Int = 5000
   ): VendorPaginatedResponse!
   vendor(id: ID!): Vendor
   searchVendors(query: String!, location: GeoPointInput): [Vendor!]!
-  
+
   menuCategories(vendorId: ID!): [MenuCategory!]!
   menuItems(vendorId: ID!, category: String): [MenuItem!]!
   menuItem(id: ID!): MenuItem
@@ -22,10 +20,6 @@ type Mutation {
   removeAddress(id: ID!): Vendor!
 }
 
-type Subscription {
-}
-
-# Response Types
 type VendorPaginatedResponse {
   data: [Vendor!]!
   pagination: Pagination!
@@ -47,12 +41,6 @@ type Vendor {
   address: Address!
   openingHours: [OpeningHours!]!
   menuCategories: [MenuCategory!]!
-}
-
-type OpeningHours {
-  day: DayOfWeek!
-  open: String!
-  close: String!
 }
 
 type MenuCategory {
@@ -104,3 +92,10 @@ enum MenuCategoryName {
   ALCOHOLIC_DRINKS
 }
 
+type Review {
+  id: ID!
+  user: User!
+  rating: Int!
+  comment: String
+  createdAt: String!
+}

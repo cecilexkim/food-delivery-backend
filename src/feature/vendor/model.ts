@@ -1,6 +1,7 @@
 // models/Vendor.ts
 import mongoose, { Schema, Document } from 'mongoose';
-import { OpeningHours } from '../generated/graphql';
+
+import { OpeningHours } from '@generated/graphql/types';
 
 export interface IVendor extends Document {
   name: string;

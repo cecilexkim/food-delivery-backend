@@ -1,15 +1,13 @@
 import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
-import authModule from './features/auth';
-import vendorModule from './features/vendors';
-import orderModule from './features/orders';
+import { authDirective } from '@core/util/auth';
+import vendorModule from './feature/vendor';
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 
 async function createServer() {
   const typeDefs = mergeTypeDefs([
-    authModule.schema,
     vendorModule.schema,
     orderModule.schema,
     // ... other modules
