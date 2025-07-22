@@ -1,0 +1,81 @@
+# schema.graphql
+
+type Query {
+  
+}
+
+type Mutation {
+ 
+}
+
+type Subscription {
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+  phone: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  phone: String
+  avatar: String
+}
+
+input GeoPointInput {
+  latitudeDegrees: Float! @constraint(min: -90, max: 90)
+  longitudeDegrees: Float! @constraint(min: -180, max: 180)
+}
+
+type GeoPoint {
+  latitudeDegrees: Float! @constraint(min: -90, max: 90)
+  longitudeDegrees: Float! @constraint(min: -180, max: 180)
+}
+
+input AddressInput {
+  title: String!
+  address: String!
+  location: GeoPointInput!
+  isDefault: Boolean
+}
+
+type Address {
+  id: ID!
+  title: String!
+  street: String!
+  city: String!
+  state: String!
+  zipCode: String!
+  country: String!
+  location: GeoPoint!
+  isDefault: Boolean!
+}
+
+input PaginationInput {
+  page: Int! @constraint(min: 1)
+  limit: Int! @constraint(min: 1, max: 100)
+}
+
+type Pagination {
+  page: Int!
+  limit: Int!
+  total: Int!
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}

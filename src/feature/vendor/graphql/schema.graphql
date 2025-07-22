@@ -1,0 +1,106 @@
+# schema.graphql
+
+type Query {
+  vendors(
+    page: Int = 1, 
+    limit: Int = 10, 
+    cuisine: String, 
+    location: GeoPointInput,
+    radius: Int = 5000
+  ): VendorPaginatedResponse!
+  vendor(id: ID!): Vendor
+  searchVendors(query: String!, location: GeoPointInput): [Vendor!]!
+  
+  menuCategories(vendorId: ID!): [MenuCategory!]!
+  menuItems(vendorId: ID!, category: String): [MenuItem!]!
+  menuItem(id: ID!): MenuItem
+}
+
+type Mutation {
+  addAddress(input: AddressInput!): Vendor!
+  updateAddress(id: ID!, input: AddressInput!): Vendor!
+  removeAddress(id: ID!): Vendor!
+}
+
+type Subscription {
+}
+
+# Response Types
+type VendorPaginatedResponse {
+  data: [Vendor!]!
+  pagination: Pagination!
+}
+
+type Vendor {
+  id: ID!
+  name: String!
+  description: String!
+  logo: String!
+  coverImage: String!
+  cuisineType: String!
+  deliveryFee: Float!
+  minOrder: Float!
+  rating: Float!
+  reviewCount: Int!
+  deliveryTime: String!
+  location: GeoPoint!
+  address: Address!
+  openingHours: [OpeningHours!]!
+  menuCategories: [MenuCategory!]!
+}
+
+type OpeningHours {
+  day: DayOfWeek!
+  open: String!
+  close: String!
+}
+
+type MenuCategory {
+  name: MenuCategoryName!
+  items: [MenuItem!]!
+}
+
+type MenuItem {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  category: String!
+  image: String
+  options: [MenuItemOption!]
+  isAvailable: Boolean!
+}
+
+type MenuItemOption {
+  name: String!
+  choices: [MenuItemOptionChoice!]!
+}
+
+type MenuItemOptionChoice {
+  name: String!
+  price: Float!
+}
+
+enum MenuCategoryName {
+  APPETIZERS
+  SOUPS
+  SALADS
+  SNACKS
+  ENTREES
+  SANDWICHES
+  BURGERS
+  PIZZAS
+  PASTAS
+  SEAFOOD
+  VEGETARIAN
+  VEGAN
+  DESSERTS
+  BREAKFAST
+  BRUNCH
+  LUNCH
+  DINNER
+  KIDS_MENU
+  DRINKS
+  ALCOHOLIC_DRINKS
+}
+

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["src/config/*"],
+      "@core/*": ["src/core/*"],
+      "@feature/*": ["src/feature/*"],
+      "@generated/*": ["src/generated/*"],
+      "@util/*": ["src/util/*"],
+      "@vendor/*": ["src/feature/vendor/*"]
+    }
+  },
+  "include": ["src/**/*", "codegen.ts", "codegen.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"],
+  "files": ["src/@types/graphql.d.ts"]
+}
