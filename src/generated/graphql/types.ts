@@ -4,29 +4,20 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
+  [_ in K]?: never;
+};
+export type Incremental<T> =
+  | T
+  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-};
-
-export type Address = {
-  __typename?: 'Address';
-  city: Scalars['String']['output'];
-  country: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  isDefault: Scalars['Boolean']['output'];
-  location: GeoPoint;
-  state: Scalars['String']['output'];
-  street: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  zipCode: Scalars['String']['output'];
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
 };
 
 export type AddressInput = {
@@ -36,6 +27,21 @@ export type AddressInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateVendorInput = {
+  address: Scalars['String']['input'];
+  coverImage: Scalars['String']['input'];
+  cuisineType: Scalars['String']['input'];
+  deliveryFee: Scalars['Float']['input'];
+  deliveryTime: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  location: GeoPointInput;
+  logo: Scalars['String']['input'];
+  minOrder: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+  openingHours: Array<OpeningHoursInput>;
+};
+
 export enum DayOfWeek {
   Friday = 'FRIDAY',
   Monday = 'MONDAY',
@@ -43,14 +49,14 @@ export enum DayOfWeek {
   Sunday = 'SUNDAY',
   Thursday = 'THURSDAY',
   Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY'
+  Wednesday = 'WEDNESDAY',
 }
 
 export enum DeliveryStatus {
   Delivered = 'DELIVERED',
   InTransit = 'IN_TRANSIT',
   Nearby = 'NEARBY',
-  PickedUp = 'PICKED_UP'
+  PickedUp = 'PICKED_UP',
 }
 
 export type DeliveryUpdate = {
@@ -75,8 +81,16 @@ export type GeoPoint = {
 };
 
 export type GeoPointInput = {
-  latitudeDegrees: Scalars['Float']['input'];
-  longitudeDegrees: Scalars['Float']['input'];
+  latDeg: Scalars['Float']['input'];
+  lonDeg: Scalars['Float']['input'];
+};
+
+export type GetNearbyVendorsInput = {
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  isOpenNow?: InputMaybe<Scalars['Boolean']['input']>;
+  location: GeoPointInput;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  radiusMeters?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type LoginInput = {
@@ -110,7 +124,7 @@ export enum MenuCategoryName {
   Snacks = 'SNACKS',
   Soups = 'SOUPS',
   Vegan = 'VEGAN',
-  Vegetarian = 'VEGETARIAN'
+  Vegetarian = 'VEGETARIAN',
 }
 
 export type MenuItem = {
@@ -139,25 +153,57 @@ export type MenuItemOptionChoice = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addAddress: Vendor;
-  removeAddress: Vendor;
+  addReview: Review;
+  createAddress: Vendor;
+  createVendor: Vendor;
+  deleteReview: Scalars['Boolean']['output'];
+  deleteVendor: Scalars['Boolean']['output'];
+  removeAddress: Scalars['Boolean']['output'];
   updateAddress: Vendor;
+  updateReview: Review;
+  updateVendor: Vendor;
 };
 
+export type MutationAddReviewArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  rating: Scalars['Int']['input'];
+  vendorId: Scalars['ID']['input'];
+};
 
-export type MutationAddAddressArgs = {
+export type MutationCreateAddressArgs = {
   input: AddressInput;
 };
 
+export type MutationCreateVendorArgs = {
+  input: CreateVendorInput;
+};
+
+export type MutationDeleteReviewArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteVendorArgs = {
+  id: Scalars['ID']['input'];
+};
 
 export type MutationRemoveAddressArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type MutationUpdateAddressArgs = {
   id: Scalars['ID']['input'];
   input: AddressInput;
+};
+
+export type MutationUpdateReviewArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  rating?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MutationUpdateVendorArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateVendorInput;
 };
 
 export type OpeningHours = {
@@ -167,11 +213,17 @@ export type OpeningHours = {
   open: Scalars['String']['output'];
 };
 
+export type OpeningHoursInput = {
+  close: Scalars['String']['input'];
+  day: Scalars['Int']['input'];
+  open: Scalars['String']['input'];
+};
+
 export type Order = {
   __typename?: 'Order';
   createdAt: Scalars['String']['output'];
   deliveredAt?: Maybe<Scalars['String']['output']>;
-  deliveryAddress: Address;
+  deliveryAddress: Scalars['String']['output'];
   deliveryFee: Scalars['Float']['output'];
   driver?: Maybe<Driver>;
   estimatedDelivery?: Maybe<Scalars['String']['output']>;
@@ -206,7 +258,7 @@ export enum OrderStatus {
   Cancelled = 'CANCELLED',
   Delivered = 'DELIVERED',
   OnTheWay = 'ON_THE_WAY',
-  Preparing = 'PREPARING'
+  Preparing = 'PREPARING',
 }
 
 export type Pagination = {
@@ -219,6 +271,8 @@ export type Pagination = {
 export type PaginationInput = {
   limit: Scalars['Int']['input'];
   page: Scalars['Int']['input'];
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
 };
 
 export type PaymentIntent = {
@@ -235,9 +289,9 @@ export type PaymentMethod = {
 };
 
 export enum PaymentStatus {
-  Completed = 'COMPLETED',
   Failed = 'FAILED',
-  Pending = 'PENDING'
+  Pending = 'PENDING',
+  Succeeded = 'SUCCEEDED',
 }
 
 export type Query = {
@@ -245,45 +299,36 @@ export type Query = {
   menuCategories: Array<MenuCategory>;
   menuItem?: Maybe<MenuItem>;
   menuItems: Array<MenuItem>;
-  searchVendors: Array<Vendor>;
+  searchVendors: VendorPaginatedResponse;
   vendor?: Maybe<Vendor>;
   vendors: VendorPaginatedResponse;
 };
-
 
 export type QueryMenuCategoriesArgs = {
   vendorId: Scalars['ID']['input'];
 };
 
-
 export type QueryMenuItemArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryMenuItemsArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
   vendorId: Scalars['ID']['input'];
 };
 
-
 export type QuerySearchVendorsArgs = {
-  location?: InputMaybe<GeoPointInput>;
-  query: Scalars['String']['input'];
+  input?: InputMaybe<SearchVendorsInput>;
+  pageInput?: InputMaybe<PaginationInput>;
 };
-
 
 export type QueryVendorArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type QueryVendorsArgs = {
-  cuisine?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  location?: InputMaybe<GeoPointInput>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  radius?: InputMaybe<Scalars['Int']['input']>;
+  input?: InputMaybe<GetNearbyVendorsInput>;
+  pageInput?: InputMaybe<PaginationInput>;
 };
 
 export type RegisterInput = {
@@ -302,9 +347,37 @@ export type Review = {
   user: User;
 };
 
+export type SearchVendorsInput = {
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  location?: InputMaybe<GeoPointInput>;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  query: Scalars['String']['input'];
+  radiusMeters?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}
+
+export type UpdateVendorInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  coverImage?: InputMaybe<Scalars['String']['input']>;
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  deliveryFee?: InputMaybe<Scalars['Float']['input']>;
+  deliveryTime?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  location?: InputMaybe<GeoPointInput>;
+  logo?: InputMaybe<Scalars['String']['input']>;
+  minOrder?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  openingHours?: InputMaybe<Array<OpeningHoursInput>>;
+};
+
 export type User = {
   __typename?: 'User';
-  addresses: Array<Address>;
+  addresses: Array<Scalars['String']['output']>;
   avatar?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   favorites: Array<MenuItem>;
@@ -315,21 +388,21 @@ export type User = {
 
 export type Vendor = {
   __typename?: 'Vendor';
-  address: Address;
-  coverImage: Scalars['String']['output'];
-  cuisineType: Scalars['String']['output'];
-  deliveryFee: Scalars['Float']['output'];
-  deliveryTime: Scalars['String']['output'];
-  description: Scalars['String']['output'];
+  xaddress: Scalars['String']['output'];
+  xcoverImage: Scalars['String']['output'];
+  xcuisineType: Scalars['String']['output'];
+  xdeliveryFee: Scalars['Float']['output'];
+  xdeliveryTime: Scalars['String']['output'];
+  xdescription: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  location: GeoPoint;
-  logo: Scalars['String']['output'];
-  menuCategories: Array<MenuCategory>;
-  minOrder: Scalars['Float']['output'];
-  name: Scalars['String']['output'];
-  openingHours: Array<OpeningHours>;
-  rating: Scalars['Float']['output'];
-  reviewCount: Scalars['Int']['output'];
+  xlocation: GeoPoint;
+  xlogo: Scalars['String']['output'];
+  menu: Array<MenuCategory>;
+  xminOrder: Scalars['Float']['output'];
+  xname: Scalars['String']['output'];
+  xopeningHours: Array<OpeningHours>;
+  xrating: Scalars['Float']['output'];
+  xreviewCount: Scalars['Int']['output'];
 };
 
 export type VendorPaginatedResponse = {
@@ -338,38 +411,43 @@ export type VendorPaginatedResponse = {
   pagination: Pagination;
 };
 
-
-
 export type ResolverTypeWrapper<T> = Promise<T> | T;
-
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+  | ResolverFn<TResult, TParent, TContext, TArgs>
+  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => TResult | Promise<TResult>;
 
-export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
+export interface SubscriptionSubscriberObject<
+  TResult,
+  TKey extends string,
+  TParent,
+  TContext,
+  TArgs,
+> {
   subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
   resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
 }
@@ -383,17 +461,27 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+export type SubscriptionResolver<
+  TResult,
+  TKey extends string,
+  TParent = {},
+  TContext = {},
+  TArgs = {},
+> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   parent: TParent,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
+  obj: T,
+  context: TContext,
+  info: GraphQLResolveInfo,
+) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -402,16 +490,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => TResult | Promise<TResult>;
-
-
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Address: ResolverTypeWrapper<Address>;
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CreateVendorInput: CreateVendorInput;
   DayOfWeek: DayOfWeek;
   DeliveryStatus: DeliveryStatus;
   DeliveryUpdate: ResolverTypeWrapper<DeliveryUpdate>;
@@ -419,6 +505,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GeoPoint: ResolverTypeWrapper<GeoPoint>;
   GeoPointInput: GeoPointInput;
+  GetNearbyVendorsInput: GetNearbyVendorsInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LoginInput: LoginInput;
@@ -429,6 +516,7 @@ export type ResolversTypes = {
   MenuItemOptionChoice: ResolverTypeWrapper<MenuItemOptionChoice>;
   Mutation: ResolverTypeWrapper<{}>;
   OpeningHours: ResolverTypeWrapper<OpeningHours>;
+  OpeningHoursInput: OpeningHoursInput;
   Order: ResolverTypeWrapper<Order>;
   OrderItem: ResolverTypeWrapper<OrderItem>;
   OrderItemOption: ResolverTypeWrapper<OrderItemOption>;
@@ -441,7 +529,10 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RegisterInput: RegisterInput;
   Review: ResolverTypeWrapper<Review>;
+  SearchVendorsInput: SearchVendorsInput;
+  SortOrder: SortOrder;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  UpdateVendorInput: UpdateVendorInput;
   User: ResolverTypeWrapper<User>;
   Vendor: ResolverTypeWrapper<Vendor>;
   VendorPaginatedResponse: ResolverTypeWrapper<VendorPaginatedResponse>;
@@ -449,14 +540,15 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Address: Address;
   AddressInput: AddressInput;
   Boolean: Scalars['Boolean']['output'];
+  CreateVendorInput: CreateVendorInput;
   DeliveryUpdate: DeliveryUpdate;
   Driver: Driver;
   Float: Scalars['Float']['output'];
   GeoPoint: GeoPoint;
   GeoPointInput: GeoPointInput;
+  GetNearbyVendorsInput: GetNearbyVendorsInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   LoginInput: LoginInput;
@@ -466,6 +558,7 @@ export type ResolversParentTypes = {
   MenuItemOptionChoice: MenuItemOptionChoice;
   Mutation: {};
   OpeningHours: OpeningHours;
+  OpeningHoursInput: OpeningHoursInput;
   Order: Order;
   OrderItem: OrderItem;
   OrderItemOption: OrderItemOption;
@@ -476,33 +569,29 @@ export type ResolversParentTypes = {
   Query: {};
   RegisterInput: RegisterInput;
   Review: Review;
+  SearchVendorsInput: SearchVendorsInput;
   String: Scalars['String']['output'];
+  UpdateVendorInput: UpdateVendorInput;
   User: User;
   Vendor: Vendor;
   VendorPaginatedResponse: VendorPaginatedResponse;
 };
 
-export type AddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = {
-  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  location?: Resolver<ResolversTypes['GeoPoint'], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  zipCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type DeliveryUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeliveryUpdate'] = ResolversParentTypes['DeliveryUpdate']> = {
+export type DeliveryUpdateResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['DeliveryUpdate'] = ResolversParentTypes['DeliveryUpdate'],
+> = {
   estimatedArrival?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   location?: Resolver<ResolversTypes['GeoPoint'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeliveryStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DriverResolvers<ContextType = any, ParentType extends ResolversParentTypes['Driver'] = ResolversParentTypes['Driver']> = {
+export type DriverResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Driver'] = ResolversParentTypes['Driver'],
+> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -510,19 +599,28 @@ export type DriverResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GeoPointResolvers<ContextType = any, ParentType extends ResolversParentTypes['GeoPoint'] = ResolversParentTypes['GeoPoint']> = {
+export type GeoPointResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['GeoPoint'] = ResolversParentTypes['GeoPoint'],
+> = {
   latitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   longitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuCategory'] = ResolversParentTypes['MenuCategory']> = {
+export type MenuCategoryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['MenuCategory'] = ResolversParentTypes['MenuCategory'],
+> = {
   items?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['MenuCategoryName'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItem'] = ResolversParentTypes['MenuItem']> = {
+export type MenuItemResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['MenuItem'] = ResolversParentTypes['MenuItem'],
+> = {
   category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -534,35 +632,103 @@ export type MenuItemResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItemOption'] = ResolversParentTypes['MenuItemOption']> = {
+export type MenuItemOptionResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['MenuItemOption'] = ResolversParentTypes['MenuItemOption'],
+> = {
   choices?: Resolver<Array<ResolversTypes['MenuItemOptionChoice']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemOptionChoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItemOptionChoice'] = ResolversParentTypes['MenuItemOptionChoice']> = {
+export type MenuItemOptionChoiceResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['MenuItemOptionChoice'] = ResolversParentTypes['MenuItemOptionChoice'],
+> = {
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationAddAddressArgs, 'input'>>;
-  removeAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationRemoveAddressArgs, 'id'>>;
-  updateAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateAddressArgs, 'id' | 'input'>>;
+export type MutationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation'],
+> = {
+  addReview?: Resolver<
+    ResolversTypes['Review'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddReviewArgs, 'rating' | 'vendorId'>
+  >;
+  createAddress?: Resolver<
+    ResolversTypes['Vendor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateAddressArgs, 'input'>
+  >;
+  createVendor?: Resolver<
+    ResolversTypes['Vendor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateVendorArgs, 'input'>
+  >;
+  deleteReview?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteReviewArgs, 'id'>
+  >;
+  deleteVendor?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteVendorArgs, 'id'>
+  >;
+  removeAddress?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemoveAddressArgs, 'id'>
+  >;
+  updateAddress?: Resolver<
+    ResolversTypes['Vendor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateAddressArgs, 'id' | 'input'>
+  >;
+  updateReview?: Resolver<
+    ResolversTypes['Review'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateReviewArgs, 'id'>
+  >;
+  updateVendor?: Resolver<
+    ResolversTypes['Vendor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateVendorArgs, 'id' | 'input'>
+  >;
 };
 
-export type OpeningHoursResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours']> = {
+export type OpeningHoursResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours'],
+> = {
   close?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   day?: Resolver<ResolversTypes['DayOfWeek'], ParentType, ContextType>;
   open?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
+export type OrderResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order'],
+> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveredAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  deliveryAddress?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  deliveryAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   driver?: Resolver<Maybe<ResolversTypes['Driver']>, ParentType, ContextType>;
   estimatedDelivery?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -579,7 +745,10 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem']> = {
+export type OrderItemResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem'],
+> = {
   item?: Resolver<ResolversTypes['MenuItem'], ParentType, ContextType>;
   options?: Resolver<Maybe<Array<ResolversTypes['OrderItemOption']>>, ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -588,25 +757,38 @@ export type OrderItemResolvers<ContextType = any, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderItemOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrderItemOption'] = ResolversParentTypes['OrderItemOption']> = {
+export type OrderItemOptionResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['OrderItemOption'] = ResolversParentTypes['OrderItemOption'],
+> = {
   choice?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaginationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination']> = {
+export type PaginationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination'],
+> = {
   limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaymentIntentResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentIntent'] = ResolversParentTypes['PaymentIntent']> = {
+export type PaymentIntentResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PaymentIntent'] = ResolversParentTypes['PaymentIntent'],
+> = {
   clientSecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaymentMethodResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentMethod'] = ResolversParentTypes['PaymentMethod']> = {
+export type PaymentMethodResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PaymentMethod'] = ResolversParentTypes['PaymentMethod'],
+> = {
   brand?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   last4?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -614,16 +796,52 @@ export type PaymentMethodResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  menuCategories?: Resolver<Array<ResolversTypes['MenuCategory']>, ParentType, ContextType, RequireFields<QueryMenuCategoriesArgs, 'vendorId'>>;
-  menuItem?: Resolver<Maybe<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemArgs, 'id'>>;
-  menuItems?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemsArgs, 'vendorId'>>;
-  searchVendors?: Resolver<Array<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QuerySearchVendorsArgs, 'query'>>;
-  vendor?: Resolver<Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorArgs, 'id'>>;
-  vendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, RequireFields<QueryVendorsArgs, 'limit' | 'page' | 'radius'>>;
+export type QueryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
+> = {
+  menuCategories?: Resolver<
+    Array<ResolversTypes['MenuCategory']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMenuCategoriesArgs, 'vendorId'>
+  >;
+  menuItem?: Resolver<
+    Maybe<ResolversTypes['MenuItem']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMenuItemArgs, 'id'>
+  >;
+  menuItems?: Resolver<
+    Array<ResolversTypes['MenuItem']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMenuItemsArgs, 'vendorId'>
+  >;
+  searchVendors?: Resolver<
+    ResolversTypes['VendorPaginatedResponse'],
+    ParentType,
+    ContextType,
+    Partial<QuerySearchVendorsArgs>
+  >;
+  vendor?: Resolver<
+    Maybe<ResolversTypes['Vendor']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryVendorArgs, 'id'>
+  >;
+  vendors?: Resolver<
+    ResolversTypes['VendorPaginatedResponse'],
+    ParentType,
+    ContextType,
+    Partial<QueryVendorsArgs>
+  >;
 };
 
-export type ReviewResolvers<ContextType = any, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
+export type ReviewResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review'],
+> = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -632,8 +850,11 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  addresses?: Resolver<Array<ResolversTypes['Address']>, ParentType, ContextType>;
+export type UserResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
+> = {
+  addresses?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   favorites?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType>;
@@ -643,8 +864,11 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VendorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Vendor'] = ResolversParentTypes['Vendor']> = {
-  address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+export type VendorResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Vendor'] = ResolversParentTypes['Vendor'],
+> = {
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coverImage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cuisineType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -662,14 +886,17 @@ export type VendorResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VendorPaginatedResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['VendorPaginatedResponse'] = ResolversParentTypes['VendorPaginatedResponse']> = {
+export type VendorPaginatedResponseResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['VendorPaginatedResponse'] = ResolversParentTypes['VendorPaginatedResponse'],
+> = {
   data?: Resolver<Array<ResolversTypes['Vendor']>, ParentType, ContextType>;
   pagination?: Resolver<ResolversTypes['Pagination'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Address?: AddressResolvers<ContextType>;
   DeliveryUpdate?: DeliveryUpdateResolvers<ContextType>;
   Driver?: DriverResolvers<ContextType>;
   GeoPoint?: GeoPointResolvers<ContextType>;
@@ -691,4 +918,3 @@ export type Resolvers<ContextType = any> = {
   Vendor?: VendorResolvers<ContextType>;
   VendorPaginatedResponse?: VendorPaginatedResponseResolvers<ContextType>;
 };
-
