@@ -4,20 +4,29 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+};
+
+export type Address = {
+  __typename?: 'Address';
+  city: Scalars['String']['output'];
+  country: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  location: GeoPoint;
+  state: Scalars['String']['output'];
+  street: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  zipCode: Scalars['String']['output'];
 };
 
 export type AddressInput = {
@@ -49,14 +58,14 @@ export enum DayOfWeek {
   Sunday = 'SUNDAY',
   Thursday = 'THURSDAY',
   Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY',
+  Wednesday = 'WEDNESDAY'
 }
 
 export enum DeliveryStatus {
   Delivered = 'DELIVERED',
   InTransit = 'IN_TRANSIT',
   Nearby = 'NEARBY',
-  PickedUp = 'PICKED_UP',
+  PickedUp = 'PICKED_UP'
 }
 
 export type DeliveryUpdate = {
@@ -76,8 +85,8 @@ export type Driver = {
 
 export type GeoPoint = {
   __typename?: 'GeoPoint';
-  latitudeDegrees: Scalars['Float']['output'];
-  longitudeDegrees: Scalars['Float']['output'];
+  latDeg: Scalars['Float']['output'];
+  lonDeg: Scalars['Float']['output'];
 };
 
 export type GeoPointInput = {
@@ -124,7 +133,7 @@ export enum MenuCategoryName {
   Snacks = 'SNACKS',
   Soups = 'SOUPS',
   Vegan = 'VEGAN',
-  Vegetarian = 'VEGETARIAN',
+  Vegetarian = 'VEGETARIAN'
 }
 
 export type MenuItem = {
@@ -164,42 +173,51 @@ export type Mutation = {
   updateVendor: Vendor;
 };
 
+
 export type MutationAddReviewArgs = {
   comment?: InputMaybe<Scalars['String']['input']>;
   rating: Scalars['Int']['input'];
   vendorId: Scalars['ID']['input'];
 };
 
+
 export type MutationCreateAddressArgs = {
   input: AddressInput;
 };
+
 
 export type MutationCreateVendorArgs = {
   input: CreateVendorInput;
 };
 
+
 export type MutationDeleteReviewArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type MutationDeleteVendorArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 export type MutationRemoveAddressArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type MutationUpdateAddressArgs = {
   id: Scalars['ID']['input'];
   input: AddressInput;
 };
 
+
 export type MutationUpdateReviewArgs = {
   comment?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   rating?: InputMaybe<Scalars['Int']['input']>;
 };
+
 
 export type MutationUpdateVendorArgs = {
   id: Scalars['ID']['input'];
@@ -258,7 +276,7 @@ export enum OrderStatus {
   Cancelled = 'CANCELLED',
   Delivered = 'DELIVERED',
   OnTheWay = 'ON_THE_WAY',
-  Preparing = 'PREPARING',
+  Preparing = 'PREPARING'
 }
 
 export type Pagination = {
@@ -291,7 +309,7 @@ export type PaymentMethod = {
 export enum PaymentStatus {
   Failed = 'FAILED',
   Pending = 'PENDING',
-  Succeeded = 'SUCCEEDED',
+  Succeeded = 'SUCCEEDED'
 }
 
 export type Query = {
@@ -304,27 +322,33 @@ export type Query = {
   vendors: VendorPaginatedResponse;
 };
 
+
 export type QueryMenuCategoriesArgs = {
   vendorId: Scalars['ID']['input'];
 };
 
+
 export type QueryMenuItemArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type QueryMenuItemsArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
   vendorId: Scalars['ID']['input'];
 };
 
+
 export type QuerySearchVendorsArgs = {
   input?: InputMaybe<SearchVendorsInput>;
   pageInput?: InputMaybe<PaginationInput>;
 };
 
+
 export type QueryVendorArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type QueryVendorsArgs = {
   input?: InputMaybe<GetNearbyVendorsInput>;
@@ -357,7 +381,7 @@ export type SearchVendorsInput = {
 
 export enum SortOrder {
   Asc = 'ASC',
-  Desc = 'DESC',
+  Desc = 'DESC'
 }
 
 export type UpdateVendorInput = {
@@ -388,21 +412,21 @@ export type User = {
 
 export type Vendor = {
   __typename?: 'Vendor';
-  xaddress: Scalars['String']['output'];
-  xcoverImage: Scalars['String']['output'];
-  xcuisineType: Scalars['String']['output'];
-  xdeliveryFee: Scalars['Float']['output'];
-  xdeliveryTime: Scalars['String']['output'];
-  xdescription: Scalars['String']['output'];
+  address: Scalars['String']['output'];
+  coverImage: Scalars['String']['output'];
+  cuisineType: Scalars['String']['output'];
+  deliveryFee: Scalars['Float']['output'];
+  deliveryTime: Scalars['String']['output'];
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  xlocation: GeoPoint;
-  xlogo: Scalars['String']['output'];
-  menu: Array<MenuCategory>;
-  xminOrder: Scalars['Float']['output'];
-  xname: Scalars['String']['output'];
-  xopeningHours: Array<OpeningHours>;
-  xrating: Scalars['Float']['output'];
-  xreviewCount: Scalars['Int']['output'];
+  location: GeoPoint;
+  logo: Scalars['String']['output'];
+  menuCategories: Array<MenuCategory>;
+  minOrder: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  openingHours: Array<OpeningHours>;
+  rating: Scalars['Float']['output'];
+  reviewCount: Scalars['Int']['output'];
 };
 
 export type VendorPaginatedResponse = {
@@ -411,43 +435,38 @@ export type VendorPaginatedResponse = {
   pagination: Pagination;
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
-export interface SubscriptionSubscriberObject<
-  TResult,
-  TKey extends string,
-  TParent,
-  TContext,
-  TArgs,
-> {
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
   subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
   resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
 }
@@ -461,27 +480,17 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<
-  TResult,
-  TKey extends string,
-  TParent = {},
-  TContext = {},
-  TArgs = {},
-> =
+export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   parent: TParent,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
-  obj: T,
-  context: TContext,
-  info: GraphQLResolveInfo,
-) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -490,11 +499,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
+
+
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Address: ResolverTypeWrapper<Address>;
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateVendorInput: CreateVendorInput;
@@ -540,6 +552,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Address: Address;
   AddressInput: AddressInput;
   Boolean: Scalars['Boolean']['output'];
   CreateVendorInput: CreateVendorInput;
@@ -577,21 +590,27 @@ export type ResolversParentTypes = {
   VendorPaginatedResponse: VendorPaginatedResponse;
 };
 
-export type DeliveryUpdateResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['DeliveryUpdate'] = ResolversParentTypes['DeliveryUpdate'],
-> = {
+export type AddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = {
+  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['GeoPoint'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  zipCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DeliveryUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeliveryUpdate'] = ResolversParentTypes['DeliveryUpdate']> = {
   estimatedArrival?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   location?: Resolver<ResolversTypes['GeoPoint'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeliveryStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DriverResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Driver'] = ResolversParentTypes['Driver'],
-> = {
+export type DriverResolvers<ContextType = any, ParentType extends ResolversParentTypes['Driver'] = ResolversParentTypes['Driver']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -599,28 +618,19 @@ export type DriverResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GeoPointResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['GeoPoint'] = ResolversParentTypes['GeoPoint'],
-> = {
-  latitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  longitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+export type GeoPointResolvers<ContextType = any, ParentType extends ResolversParentTypes['GeoPoint'] = ResolversParentTypes['GeoPoint']> = {
+  latDeg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  lonDeg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuCategoryResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['MenuCategory'] = ResolversParentTypes['MenuCategory'],
-> = {
+export type MenuCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuCategory'] = ResolversParentTypes['MenuCategory']> = {
   items?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['MenuCategoryName'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['MenuItem'] = ResolversParentTypes['MenuItem'],
-> = {
+export type MenuItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItem'] = ResolversParentTypes['MenuItem']> = {
   category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -632,100 +642,38 @@ export type MenuItemResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemOptionResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MenuItemOption'] = ResolversParentTypes['MenuItemOption'],
-> = {
+export type MenuItemOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItemOption'] = ResolversParentTypes['MenuItemOption']> = {
   choices?: Resolver<Array<ResolversTypes['MenuItemOptionChoice']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MenuItemOptionChoiceResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MenuItemOptionChoice'] = ResolversParentTypes['MenuItemOptionChoice'],
-> = {
+export type MenuItemOptionChoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['MenuItemOptionChoice'] = ResolversParentTypes['MenuItemOptionChoice']> = {
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MutationResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation'],
-> = {
-  addReview?: Resolver<
-    ResolversTypes['Review'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationAddReviewArgs, 'rating' | 'vendorId'>
-  >;
-  createAddress?: Resolver<
-    ResolversTypes['Vendor'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateAddressArgs, 'input'>
-  >;
-  createVendor?: Resolver<
-    ResolversTypes['Vendor'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateVendorArgs, 'input'>
-  >;
-  deleteReview?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteReviewArgs, 'id'>
-  >;
-  deleteVendor?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteVendorArgs, 'id'>
-  >;
-  removeAddress?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationRemoveAddressArgs, 'id'>
-  >;
-  updateAddress?: Resolver<
-    ResolversTypes['Vendor'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateAddressArgs, 'id' | 'input'>
-  >;
-  updateReview?: Resolver<
-    ResolversTypes['Review'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateReviewArgs, 'id'>
-  >;
-  updateVendor?: Resolver<
-    ResolversTypes['Vendor'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateVendorArgs, 'id' | 'input'>
-  >;
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationAddReviewArgs, 'rating' | 'vendorId'>>;
+  createAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationCreateAddressArgs, 'input'>>;
+  createVendor?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationCreateVendorArgs, 'input'>>;
+  deleteReview?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'id'>>;
+  deleteVendor?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteVendorArgs, 'id'>>;
+  removeAddress?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveAddressArgs, 'id'>>;
+  updateAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateAddressArgs, 'id' | 'input'>>;
+  updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationUpdateReviewArgs, 'id'>>;
+  updateVendor?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateVendorArgs, 'id' | 'input'>>;
 };
 
-export type OpeningHoursResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours'],
-> = {
+export type OpeningHoursResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours']> = {
   close?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   day?: Resolver<ResolversTypes['DayOfWeek'], ParentType, ContextType>;
   open?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order'],
-> = {
+export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveredAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deliveryAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -745,10 +693,7 @@ export type OrderResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderItemResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem'],
-> = {
+export type OrderItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem']> = {
   item?: Resolver<ResolversTypes['MenuItem'], ParentType, ContextType>;
   options?: Resolver<Maybe<Array<ResolversTypes['OrderItemOption']>>, ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -757,38 +702,25 @@ export type OrderItemResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderItemOptionResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrderItemOption'] = ResolversParentTypes['OrderItemOption'],
-> = {
+export type OrderItemOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrderItemOption'] = ResolversParentTypes['OrderItemOption']> = {
   choice?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaginationResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination'],
-> = {
+export type PaginationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination']> = {
   limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaymentIntentResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['PaymentIntent'] = ResolversParentTypes['PaymentIntent'],
-> = {
+export type PaymentIntentResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentIntent'] = ResolversParentTypes['PaymentIntent']> = {
   clientSecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PaymentMethodResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['PaymentMethod'] = ResolversParentTypes['PaymentMethod'],
-> = {
+export type PaymentMethodResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentMethod'] = ResolversParentTypes['PaymentMethod']> = {
   brand?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   last4?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -796,52 +728,16 @@ export type PaymentMethodResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
-> = {
-  menuCategories?: Resolver<
-    Array<ResolversTypes['MenuCategory']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryMenuCategoriesArgs, 'vendorId'>
-  >;
-  menuItem?: Resolver<
-    Maybe<ResolversTypes['MenuItem']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryMenuItemArgs, 'id'>
-  >;
-  menuItems?: Resolver<
-    Array<ResolversTypes['MenuItem']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryMenuItemsArgs, 'vendorId'>
-  >;
-  searchVendors?: Resolver<
-    ResolversTypes['VendorPaginatedResponse'],
-    ParentType,
-    ContextType,
-    Partial<QuerySearchVendorsArgs>
-  >;
-  vendor?: Resolver<
-    Maybe<ResolversTypes['Vendor']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryVendorArgs, 'id'>
-  >;
-  vendors?: Resolver<
-    ResolversTypes['VendorPaginatedResponse'],
-    ParentType,
-    ContextType,
-    Partial<QueryVendorsArgs>
-  >;
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  menuCategories?: Resolver<Array<ResolversTypes['MenuCategory']>, ParentType, ContextType, RequireFields<QueryMenuCategoriesArgs, 'vendorId'>>;
+  menuItem?: Resolver<Maybe<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemArgs, 'id'>>;
+  menuItems?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemsArgs, 'vendorId'>>;
+  searchVendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, Partial<QuerySearchVendorsArgs>>;
+  vendor?: Resolver<Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorArgs, 'id'>>;
+  vendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, Partial<QueryVendorsArgs>>;
 };
 
-export type ReviewResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review'],
-> = {
+export type ReviewResolvers<ContextType = any, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -850,10 +746,7 @@ export type ReviewResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
-> = {
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   addresses?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -864,10 +757,7 @@ export type UserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VendorResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Vendor'] = ResolversParentTypes['Vendor'],
-> = {
+export type VendorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Vendor'] = ResolversParentTypes['Vendor']> = {
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coverImage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cuisineType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -886,17 +776,14 @@ export type VendorResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VendorPaginatedResponseResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VendorPaginatedResponse'] = ResolversParentTypes['VendorPaginatedResponse'],
-> = {
+export type VendorPaginatedResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['VendorPaginatedResponse'] = ResolversParentTypes['VendorPaginatedResponse']> = {
   data?: Resolver<Array<ResolversTypes['Vendor']>, ParentType, ContextType>;
   pagination?: Resolver<ResolversTypes['Pagination'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
+  Address?: AddressResolvers<ContextType>;
   DeliveryUpdate?: DeliveryUpdateResolvers<ContextType>;
   Driver?: DriverResolvers<ContextType>;
   GeoPoint?: GeoPointResolvers<ContextType>;
@@ -918,3 +805,4 @@ export type Resolvers<ContextType = any> = {
   Vendor?: VendorResolvers<ContextType>;
   VendorPaginatedResponse?: VendorPaginatedResponseResolvers<ContextType>;
 };
+
