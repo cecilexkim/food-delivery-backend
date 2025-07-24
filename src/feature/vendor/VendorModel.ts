@@ -1,7 +1,7 @@
 // models/Vendor.ts
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-import { OpeningHours } from '@generated/graphql/types';
+import { OpeningHours, MenuCategory } from '@generated/graphql/types';
 
 export interface IVendor extends Document {
   name: string;
@@ -21,20 +21,24 @@ export interface IVendor extends Document {
   address: string;
   isActive: boolean;
   openingHours: OpeningHours[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const VendorSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    description: { type: String, required: true },
     logo: { type: String, required: true },
-    coverImage: { type: String, required: true },
     cuisineType: { type: String, required: true },
-    deliveryFee: { type: Number, required: true },
-    minOrder: { type: Number, required: true },
+    description: { type: String, required: true },
+    coverImage: { type: String, required: true },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
+    deliveryFee: { type: Number, required: true },
+    minOrder: { type: Number, required: true },
     deliveryTime: { type: String, required: true },
+    address: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
     location: {
       type: {
         type: String,
@@ -46,13 +50,37 @@ const VendorSchema: Schema = new Schema(
         required: true,
       },
     },
-    address: { type: String, required: true },
-    isActive: { type: Boolean, default: true },
     openingHours: [
       {
         day: { type: Number, required: true, min: 0, max: 6 },
         open: { type: String, required: true },
         close: { type: String, required: true },
+      },
+    ],
+    menu: [
+      {
+        name: { type: String, required: true },
+        items: [
+          {
+            name: { type: String, required: true },
+            category: { type: String, required: true },
+            description: { type: String },
+            price: { type: Number, required: true },
+            image: { type: String },
+            isAvailable: { type: Boolean, default: true },
+            options: [
+              {
+                name: { type: String, required: true },
+                choices: [
+                  {
+                    name: { type: String, required: true },
+                    price: { type: Number, default: 0 },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     ],
   },
