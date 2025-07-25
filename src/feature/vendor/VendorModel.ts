@@ -1,7 +1,7 @@
 // models/Vendor.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
-import { OpeningHours, MenuCategory } from '@generated/graphql/types';
+import { OpeningHours } from '@generated/graphql/types';
 
 export interface IVendor extends Document {
   name: string;
@@ -28,9 +28,9 @@ export interface IVendor extends Document {
 const VendorSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
+    description: { type: String, required: true },
     logo: { type: String, required: true },
     cuisineType: { type: String, required: true },
-    description: { type: String, required: true },
     coverImage: { type: String, required: true },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
