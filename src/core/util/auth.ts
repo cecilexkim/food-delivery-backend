@@ -1,6 +1,5 @@
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
-import { Context } from '../types/context';
 
 export function authDirective(schema: GraphQLSchema) {
   return mapSchema(schema, {
@@ -10,7 +9,7 @@ export function authDirective(schema: GraphQLSchema) {
 
       const { resolve = defaultFieldResolver } = fieldConfig;
 
-      fieldConfig.resolve = async function (source, args, context: Context, info) {
+      fieldConfig.resolve = async function (source, args, context, info) {
         if (!context.user) {
           throw new Error('Authentication required');
         }

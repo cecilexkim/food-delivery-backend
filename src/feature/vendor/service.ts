@@ -1,16 +1,23 @@
 // src/features/vendors/services/vendor.service.ts
 import { Injectable } from '@nestjs/common'; // Or your DI system
-import VendorModel, { IVendor } from './model';
+import typeDefs from './graphql/schema.graphql';
+import resolvers from './graphql/resolvers';
+import VendorModel, { IVendor } from './VendorModel';
+import ReviewModel, { IReview } from './ReviewModel';
+
 import {
+  GetNearbyVendorsInput,
   CreateVendorInput,
   UpdateVendorInput,
-  NearbyVendorsInput,
   SearchVendorsInput,
-} from './graphql/schemas.graphql';
+  PaginationInput,
+} from '@generated/graphql/types';
 
-import { PaginationInput } from '@generated/graphql/types';
+import { ServiceError } from '@core/error';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { authDirective } from '@core/util/auth';
 
-import { ServiceError } from '@core/error/service.error';
+const schema = authDirective(makeExecutableSchema({ typeDefs, resolvers }));
 
 @Injectable()
 export class VendorService {
@@ -20,11 +27,11 @@ export class VendorService {
         ...input,
         location: {
           type: 'Point',
-          coordinates: [input.location.lng, input.location.lat],
+          coordinates: [input.location.lonDeg, input.location.latDeg],
         },
       });
       return await vendor.save();
-    } catch (error) {
+    } catch (error: unknown) {
       throw new ServiceError('Failed to create vendor', error);
     }
   }
@@ -36,7 +43,7 @@ export class VendorService {
       if (input.location) {
         updateData.location = {
           type: 'Point',
-          coordinates: [input.location.lng, input.location.lat],
+          coordinates: [input.location.lonDeg, input.location.latDeg],
         };
       }
 
@@ -67,11 +74,11 @@ export class VendorService {
   }
 
   async getNearbyVendors(
-    input: NearbyVendorsInput,
+    input: GetNearbyVendorsInput,
     pagination: PaginationInput,
   ): Promise<{ vendors: IVendor[]; count: number }> {
     try {
-      const { lat, lng, radius = 5000, cuisineType } = input;
+      const { location, radiusMeters = 5000, cuisineType } = input;
       const { page = 1, limit = 10 } = pagination;
 
       const query: any = {
@@ -79,9 +86,9 @@ export class VendorService {
           $near: {
             $geometry: {
               type: 'Point',
-              coordinates: [lng, lat],
+              coordinates: [location.lonDeg, location.latDeg],
             },
-            $maxDistance: radius,
+            $maxDistance: radiusMeters,
           },
         },
         isActive: true,
@@ -106,7 +113,7 @@ export class VendorService {
 
   async searchVendors(input: SearchVendorsInput): Promise<IVendor[]> {
     try {
-      const { query, location, radius = 5000 } = input;
+      const { query, location, radiusMeters = 5000 } = input;
 
       const searchQuery: any = {
         $text: { $search: query },
@@ -118,9 +125,9 @@ export class VendorService {
           $near: {
             $geometry: {
               type: 'Point',
-              coordinates: [location.lng, location.lat],
+              coordinates: [location.lonDeg, location.latDeg],
             },
-            $maxDistance: radius,
+            $maxDistance: radiusMeters,
           },
         };
       }

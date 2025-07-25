@@ -36,6 +36,21 @@ export type AddressInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateVendorInput = {
+  address: Scalars['String']['input'];
+  coverImage: Scalars['String']['input'];
+  cuisineType: Scalars['String']['input'];
+  deliveryFee: Scalars['Float']['input'];
+  deliveryTime: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  location: GeoPointInput;
+  logo: Scalars['String']['input'];
+  minOrder: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+  openingHours: Array<OpeningHoursInput>;
+};
+
 export enum DayOfWeek {
   Friday = 'FRIDAY',
   Monday = 'MONDAY',
@@ -70,13 +85,21 @@ export type Driver = {
 
 export type GeoPoint = {
   __typename?: 'GeoPoint';
-  latitudeDegrees: Scalars['Float']['output'];
-  longitudeDegrees: Scalars['Float']['output'];
+  latDeg: Scalars['Float']['output'];
+  lonDeg: Scalars['Float']['output'];
 };
 
 export type GeoPointInput = {
-  latitudeDegrees: Scalars['Float']['input'];
-  longitudeDegrees: Scalars['Float']['input'];
+  latDeg: Scalars['Float']['input'];
+  lonDeg: Scalars['Float']['input'];
+};
+
+export type GetNearbyVendorsInput = {
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  isOpenNow?: InputMaybe<Scalars['Boolean']['input']>;
+  location: GeoPointInput;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  radiusMeters?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type LoginInput = {
@@ -139,14 +162,42 @@ export type MenuItemOptionChoice = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addAddress: Vendor;
-  removeAddress: Vendor;
+  addReview: Review;
+  createAddress: Vendor;
+  createVendor: Vendor;
+  deleteReview: Scalars['Boolean']['output'];
+  deleteVendor: Scalars['Boolean']['output'];
+  removeAddress: Scalars['Boolean']['output'];
   updateAddress: Vendor;
+  updateReview: Review;
+  updateVendor: Vendor;
 };
 
 
-export type MutationAddAddressArgs = {
+export type MutationAddReviewArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  rating: Scalars['Int']['input'];
+  vendorId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateAddressArgs = {
   input: AddressInput;
+};
+
+
+export type MutationCreateVendorArgs = {
+  input: CreateVendorInput;
+};
+
+
+export type MutationDeleteReviewArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteVendorArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -160,6 +211,19 @@ export type MutationUpdateAddressArgs = {
   input: AddressInput;
 };
 
+
+export type MutationUpdateReviewArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  rating?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type MutationUpdateVendorArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateVendorInput;
+};
+
 export type OpeningHours = {
   __typename?: 'OpeningHours';
   close: Scalars['String']['output'];
@@ -167,11 +231,17 @@ export type OpeningHours = {
   open: Scalars['String']['output'];
 };
 
+export type OpeningHoursInput = {
+  close: Scalars['String']['input'];
+  day: Scalars['Int']['input'];
+  open: Scalars['String']['input'];
+};
+
 export type Order = {
   __typename?: 'Order';
   createdAt: Scalars['String']['output'];
   deliveredAt?: Maybe<Scalars['String']['output']>;
-  deliveryAddress: Address;
+  deliveryAddress: Scalars['String']['output'];
   deliveryFee: Scalars['Float']['output'];
   driver?: Maybe<Driver>;
   estimatedDelivery?: Maybe<Scalars['String']['output']>;
@@ -219,6 +289,8 @@ export type Pagination = {
 export type PaginationInput = {
   limit: Scalars['Int']['input'];
   page: Scalars['Int']['input'];
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
 };
 
 export type PaymentIntent = {
@@ -235,9 +307,9 @@ export type PaymentMethod = {
 };
 
 export enum PaymentStatus {
-  Completed = 'COMPLETED',
   Failed = 'FAILED',
-  Pending = 'PENDING'
+  Pending = 'PENDING',
+  Succeeded = 'SUCCEEDED'
 }
 
 export type Query = {
@@ -245,7 +317,7 @@ export type Query = {
   menuCategories: Array<MenuCategory>;
   menuItem?: Maybe<MenuItem>;
   menuItems: Array<MenuItem>;
-  searchVendors: Array<Vendor>;
+  searchVendors: VendorPaginatedResponse;
   vendor?: Maybe<Vendor>;
   vendors: VendorPaginatedResponse;
 };
@@ -268,8 +340,8 @@ export type QueryMenuItemsArgs = {
 
 
 export type QuerySearchVendorsArgs = {
-  location?: InputMaybe<GeoPointInput>;
-  query: Scalars['String']['input'];
+  input?: InputMaybe<SearchVendorsInput>;
+  pageInput?: InputMaybe<PaginationInput>;
 };
 
 
@@ -279,11 +351,8 @@ export type QueryVendorArgs = {
 
 
 export type QueryVendorsArgs = {
-  cuisine?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  location?: InputMaybe<GeoPointInput>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  radius?: InputMaybe<Scalars['Int']['input']>;
+  input?: InputMaybe<GetNearbyVendorsInput>;
+  pageInput?: InputMaybe<PaginationInput>;
 };
 
 export type RegisterInput = {
@@ -302,9 +371,37 @@ export type Review = {
   user: User;
 };
 
+export type SearchVendorsInput = {
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  location?: InputMaybe<GeoPointInput>;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  query: Scalars['String']['input'];
+  radiusMeters?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export type UpdateVendorInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  coverImage?: InputMaybe<Scalars['String']['input']>;
+  cuisineType?: InputMaybe<Scalars['String']['input']>;
+  deliveryFee?: InputMaybe<Scalars['Float']['input']>;
+  deliveryTime?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  location?: InputMaybe<GeoPointInput>;
+  logo?: InputMaybe<Scalars['String']['input']>;
+  minOrder?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  openingHours?: InputMaybe<Array<OpeningHoursInput>>;
+};
+
 export type User = {
   __typename?: 'User';
-  addresses: Array<Address>;
+  addresses: Array<Scalars['String']['output']>;
   avatar?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   favorites: Array<MenuItem>;
@@ -315,7 +412,7 @@ export type User = {
 
 export type Vendor = {
   __typename?: 'Vendor';
-  address: Address;
+  address: Scalars['String']['output'];
   coverImage: Scalars['String']['output'];
   cuisineType: Scalars['String']['output'];
   deliveryFee: Scalars['Float']['output'];
@@ -412,6 +509,7 @@ export type ResolversTypes = {
   Address: ResolverTypeWrapper<Address>;
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CreateVendorInput: CreateVendorInput;
   DayOfWeek: DayOfWeek;
   DeliveryStatus: DeliveryStatus;
   DeliveryUpdate: ResolverTypeWrapper<DeliveryUpdate>;
@@ -419,6 +517,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GeoPoint: ResolverTypeWrapper<GeoPoint>;
   GeoPointInput: GeoPointInput;
+  GetNearbyVendorsInput: GetNearbyVendorsInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LoginInput: LoginInput;
@@ -429,6 +528,7 @@ export type ResolversTypes = {
   MenuItemOptionChoice: ResolverTypeWrapper<MenuItemOptionChoice>;
   Mutation: ResolverTypeWrapper<{}>;
   OpeningHours: ResolverTypeWrapper<OpeningHours>;
+  OpeningHoursInput: OpeningHoursInput;
   Order: ResolverTypeWrapper<Order>;
   OrderItem: ResolverTypeWrapper<OrderItem>;
   OrderItemOption: ResolverTypeWrapper<OrderItemOption>;
@@ -441,7 +541,10 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RegisterInput: RegisterInput;
   Review: ResolverTypeWrapper<Review>;
+  SearchVendorsInput: SearchVendorsInput;
+  SortOrder: SortOrder;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  UpdateVendorInput: UpdateVendorInput;
   User: ResolverTypeWrapper<User>;
   Vendor: ResolverTypeWrapper<Vendor>;
   VendorPaginatedResponse: ResolverTypeWrapper<VendorPaginatedResponse>;
@@ -452,11 +555,13 @@ export type ResolversParentTypes = {
   Address: Address;
   AddressInput: AddressInput;
   Boolean: Scalars['Boolean']['output'];
+  CreateVendorInput: CreateVendorInput;
   DeliveryUpdate: DeliveryUpdate;
   Driver: Driver;
   Float: Scalars['Float']['output'];
   GeoPoint: GeoPoint;
   GeoPointInput: GeoPointInput;
+  GetNearbyVendorsInput: GetNearbyVendorsInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   LoginInput: LoginInput;
@@ -466,6 +571,7 @@ export type ResolversParentTypes = {
   MenuItemOptionChoice: MenuItemOptionChoice;
   Mutation: {};
   OpeningHours: OpeningHours;
+  OpeningHoursInput: OpeningHoursInput;
   Order: Order;
   OrderItem: OrderItem;
   OrderItemOption: OrderItemOption;
@@ -476,7 +582,9 @@ export type ResolversParentTypes = {
   Query: {};
   RegisterInput: RegisterInput;
   Review: Review;
+  SearchVendorsInput: SearchVendorsInput;
   String: Scalars['String']['output'];
+  UpdateVendorInput: UpdateVendorInput;
   User: User;
   Vendor: Vendor;
   VendorPaginatedResponse: VendorPaginatedResponse;
@@ -511,8 +619,8 @@ export type DriverResolvers<ContextType = any, ParentType extends ResolversParen
 };
 
 export type GeoPointResolvers<ContextType = any, ParentType extends ResolversParentTypes['GeoPoint'] = ResolversParentTypes['GeoPoint']> = {
-  latitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  longitudeDegrees?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  latDeg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  lonDeg?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -547,9 +655,15 @@ export type MenuItemOptionChoiceResolvers<ContextType = any, ParentType extends 
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationAddAddressArgs, 'input'>>;
-  removeAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationRemoveAddressArgs, 'id'>>;
+  addReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationAddReviewArgs, 'rating' | 'vendorId'>>;
+  createAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationCreateAddressArgs, 'input'>>;
+  createVendor?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationCreateVendorArgs, 'input'>>;
+  deleteReview?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'id'>>;
+  deleteVendor?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteVendorArgs, 'id'>>;
+  removeAddress?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveAddressArgs, 'id'>>;
   updateAddress?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateAddressArgs, 'id' | 'input'>>;
+  updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationUpdateReviewArgs, 'id'>>;
+  updateVendor?: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateVendorArgs, 'id' | 'input'>>;
 };
 
 export type OpeningHoursResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours']> = {
@@ -562,7 +676,7 @@ export type OpeningHoursResolvers<ContextType = any, ParentType extends Resolver
 export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveredAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  deliveryAddress?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  deliveryAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   driver?: Resolver<Maybe<ResolversTypes['Driver']>, ParentType, ContextType>;
   estimatedDelivery?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -618,9 +732,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   menuCategories?: Resolver<Array<ResolversTypes['MenuCategory']>, ParentType, ContextType, RequireFields<QueryMenuCategoriesArgs, 'vendorId'>>;
   menuItem?: Resolver<Maybe<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemArgs, 'id'>>;
   menuItems?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType, RequireFields<QueryMenuItemsArgs, 'vendorId'>>;
-  searchVendors?: Resolver<Array<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QuerySearchVendorsArgs, 'query'>>;
+  searchVendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, Partial<QuerySearchVendorsArgs>>;
   vendor?: Resolver<Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorArgs, 'id'>>;
-  vendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, RequireFields<QueryVendorsArgs, 'limit' | 'page' | 'radius'>>;
+  vendors?: Resolver<ResolversTypes['VendorPaginatedResponse'], ParentType, ContextType, Partial<QueryVendorsArgs>>;
 };
 
 export type ReviewResolvers<ContextType = any, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
@@ -633,7 +747,7 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  addresses?: Resolver<Array<ResolversTypes['Address']>, ParentType, ContextType>;
+  addresses?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   favorites?: Resolver<Array<ResolversTypes['MenuItem']>, ParentType, ContextType>;
@@ -644,7 +758,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type VendorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Vendor'] = ResolversParentTypes['Vendor']> = {
-  address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coverImage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cuisineType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;

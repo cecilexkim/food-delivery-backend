@@ -1,13 +1,7 @@
 type Query {
-  vendors(
-    page: Int = 1
-    limit: Int = 10
-    cuisine: String
-    location: GeoPointInput
-    radius: Int = 5000
-  ): VendorPaginatedResponse!
   vendor(id: ID!): Vendor
-  searchVendors(query: String!, location: GeoPointInput): [Vendor!]!
+  vendors(input: GetNearbyVendorsInput, pageInput: PaginationInput): VendorPaginatedResponse!
+  searchVendors(input: SearchVendorsInput, pageInput: PaginationInput): VendorPaginatedResponse!
 
   menuCategories(vendorId: ID!): [MenuCategory!]!
   menuItems(vendorId: ID!, category: String): [MenuItem!]!
@@ -15,14 +9,26 @@ type Query {
 }
 
 type Mutation {
-  addAddress(input: AddressInput!): Vendor!
-  updateAddress(id: ID!, input: AddressInput!): Vendor!
-  removeAddress(id: ID!): Vendor!
-}
+  createVendor(input: CreateVendorInput!): Vendor!
+  updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
+  deleteVendor(id: ID!): Boolean!
+  addReview(vendorId: ID!, rating: Int!, comment: String): Review!
+  updateReview(id: ID!, rating: Int, comment: String): Review!
+  deleteReview(id: ID!): Boolean!
+  #getPaymentIntent(vendorId: ID!): PaymentIntent!
+  #addFavorite(vendorId: ID!): User!
+  #removeFavorite(vendorId: ID!): User!
+  #getPaymentMethods: [PaymentMethod!]!
+  #setDefaultPaymentMethod(id: ID!): PaymentMethod!
+  #createPaymentMethod(type: String!, last4: String, brand: String): PaymentMethod!
+  #deletePaymentMethod(id: ID!): Boolean!
+  #getAddress(id: ID!): Address!
+  #addresses(pageInput: PaginationInput): [Address!]!
+  #setDefaultAddress(id: ID!): Address!
 
-type VendorPaginatedResponse {
-  data: [Vendor!]!
-  pagination: Pagination!
+  createAddress(input: AddressInput!): Vendor!
+  updateAddress(id: ID!, input: AddressInput!): Vendor!
+  removeAddress(id: ID!): Boolean!
 }
 
 type Vendor {
@@ -38,9 +44,66 @@ type Vendor {
   reviewCount: Int!
   deliveryTime: String!
   location: GeoPoint!
-  address: Address!
+  address: String!
   openingHours: [OpeningHours!]!
   menuCategories: [MenuCategory!]!
+}
+
+input CreateVendorInput {
+  name: String! @constraint(minLength: 2, maxLength: 100)
+  description: String! @constraint(minLength: 10, maxLength: 500)
+  logo: String! @constraint(format: "uri")
+  coverImage: String! @constraint(format: "uri")
+  cuisineType: String! @constraint(minLength: 2, maxLength: 50)
+  # Units is in local currency (e.g., USD cents)
+  deliveryFee: Float! @constraint(min: 0, max: 10000)
+  # Units is in local currency (e.g., USD cents)
+  minOrder: Float! @constraint(min: 0, max: 10000)
+  # Estimated delivery time as string (e.g., "30-45 mins")
+  deliveryTime: String! @constraint(minLength: 2, maxLength: 20)
+  location: GeoPointInput!
+  # Human-readable address
+  address: String! @constraint(minLength: 5, maxLength: 200)
+  openingHours: [OpeningHoursInput!]! @constraint(minLength: 1, maxLength: 7)
+  isActive: Boolean = true
+}
+
+input UpdateVendorInput {
+  name: String @constraint(minLength: 2, maxLength: 100)
+  description: String @constraint(minLength: 10, maxLength: 500)
+  logo: String @constraint(format: "uri")
+  coverImage: String @constraint(format: "uri")
+  cuisineType: String @constraint(minLength: 2, maxLength: 50)
+  # Units is in local currency (e.g., USD cents)
+  deliveryFee: Float @constraint(min: 0, max: 10000)
+  # Units is in local currency (e.g., USD cents)
+  minOrder: Float @constraint(min: 0, max: 10000)
+  # Estimated delivery time as string (e.g., "30-45 mins")
+  deliveryTime: String @constraint(minLength: 2, maxLength: 20)
+  location: GeoPointInput
+  # Human-readable address
+  address: String @constraint(minLength: 5, maxLength: 200)
+  openingHours: [OpeningHoursInput!] @constraint(minLength: 1, maxLength: 7)
+  isActive: Boolean
+}
+
+input GetNearbyVendorsInput {
+  location: GeoPointInput!
+  radiusMeters: Int @constraint(min: 100, max: 50000)
+  cuisineType: String @constraint(minLength: 2, maxLength: 50)
+  minRating: Float @constraint(min: 0, max: 5)
+  isOpenNow: Boolean
+}
+
+input SearchVendorsInput {
+  # Search query (name, cuisine, etc.)
+  query: String! @constraint(minLength: 2, maxLength: 100)
+  # Optional location for proximity sorting
+  location: GeoPointInput
+  # Search radius when location provided (meters)
+  radiusMeters: Int @constraint(min: 100, max: 50000)
+  cuisineType: String @constraint(minLength: 2, maxLength: 50)
+  minRating: Float @constraint(min: 0, max: 5)
 }
 
 type MenuCategory {
@@ -98,4 +161,42 @@ type Review {
   rating: Int!
   comment: String
   createdAt: String!
+}
+
+type OpeningHours {
+  day: DayOfWeek!
+  open: String!
+  close: String!
+}
+
+input OpeningHoursInput {
+  # Day of week (0=Sunday, 6=Saturday)
+  day: Int! @constraint(min: 0, max: 6)
+  # Opening time in 24h format (HH:MM)
+  open: String! @constraint(pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+  # Closing time in 24h format (HH:MM)
+  close: String! @constraint(pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+}
+
+type VendorPaginatedResponse {
+  data: [Vendor!]!
+  pagination: Pagination!
+}
+
+type Pagination {
+  page: Int!
+  limit: Int!
+  total: Int!
+}
+
+input PaginationInput {
+  page: Int! @constraint(min: 1)
+  limit: Int! @constraint(min: 1, max: 50)
+  sortBy: String @constraint(minLength: 1, maxLength: 50)
+  sortOrder: SortOrder = ASC
+}
+
+enum SortOrder {
+  ASC
+  DESC
 }
