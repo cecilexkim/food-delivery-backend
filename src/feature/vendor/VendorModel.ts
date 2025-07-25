@@ -1,7 +1,7 @@
 // models/Vendor.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
-import { OpeningHours } from '@generated/graphql/types';
+import { MenuCategory, OpeningHours } from '@generated/graphql/types';
 
 export interface IVendor extends Document {
   name: string;
@@ -21,6 +21,7 @@ export interface IVendor extends Document {
   address: string;
   isActive: boolean;
   openingHours: OpeningHours[];
+  menu: MenuCategory[];
   createdAt: Date;
   updatedAt: Date;
 }
