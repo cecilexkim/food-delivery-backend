@@ -6,12 +6,12 @@ import { MenuCategory, OpeningHours } from '@generated/graphql/types';
 export interface IVendor extends Document {
   name: string;
   description: string;
+  rating: number;
   logo: string;
   coverImage: string;
   cuisineType: string;
   deliveryFee: number;
   minOrder: number;
-  rating: number;
   reviewCount: number;
   deliveryTime: string;
   location: {
@@ -26,14 +26,14 @@ export interface IVendor extends Document {
   updatedAt: Date;
 }
 
-const VendorSchema: Schema = new Schema(
+const VendorSchema: Schema = new Schema<IVendor>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
+    rating: { type: Number, default: 0, index: true },
     logo: { type: String, required: true },
     cuisineType: { type: String, required: true },
     coverImage: { type: String, required: true },
-    rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     deliveryFee: { type: Number, required: true },
     minOrder: { type: Number, required: true },
