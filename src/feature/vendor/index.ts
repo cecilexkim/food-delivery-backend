@@ -1,7 +1,7 @@
 import VendorResolver from './graphql/resolvers';
 import VendorSchema from './graphql/schema.graphql';
 import { VendorService } from './service';
-import VendorModel from './model';
+import VendorModel from './VendorModel';
 
 export default {
   resolvers: VendorResolver,

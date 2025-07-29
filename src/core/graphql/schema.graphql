@@ -10,21 +10,14 @@ input LoginInput {
   password: String!
 }
 
-input GeoPointInput {
-  latitudeDegrees: Float! @constraint(min: -90, max: 90)
-  longitudeDegrees: Float! @constraint(min: -180, max: 180)
-}
-
 type GeoPoint {
-  latitudeDegrees: Float! @constraint(min: -90, max: 90)
-  longitudeDegrees: Float! @constraint(min: -180, max: 180)
+  latDeg: Float! @constraint(min: -90, max: 90)
+  lonDeg: Float! @constraint(min: -180, max: 180)
 }
 
-input AddressInput {
-  title: String!
-  address: String!
-  location: GeoPointInput!
-  isDefault: Boolean
+input GeoPointInput {
+  latDeg: Float! @constraint(min: -90, max: 90)
+  lonDeg: Float! @constraint(min: -180, max: 180)
 }
 
 type Address {
@@ -39,21 +32,11 @@ type Address {
   isDefault: Boolean!
 }
 
-type OpeningHours {
-  day: DayOfWeek!
-  open: String!
-  close: String!
-}
-
-input PaginationInput {
-  page: Int! @constraint(min: 1)
-  limit: Int! @constraint(min: 1, max: 100)
-}
-
-type Pagination {
-  page: Int!
-  limit: Int!
-  total: Int!
+input AddressInput {
+  title: String!
+  address: String!
+  location: GeoPointInput!
+  isDefault: Boolean
 }
 
 type PaymentIntent {
@@ -68,19 +51,19 @@ type PaymentMethod {
 }
 
 enum PaymentStatus {
-  PENDING
-  COMPLETED
   FAILED
+  SUCCEEDED
+  PENDING
 }
 
 enum DayOfWeek {
+  SUNDAY
   MONDAY
   TUESDAY
   WEDNESDAY
   THURSDAY
   FRIDAY
   SATURDAY
-  SUNDAY
 }
 
 # Shared Types
@@ -90,7 +73,7 @@ type User {
   email: String!
   phone: String!
   avatar: String
-  addresses: [Address!]!
+  addresses: [String!]!
   favorites: [MenuItem!]!
 }
 
@@ -110,7 +93,7 @@ type Order {
   deliveryFee: Float!
   tax: Float!
   total: Float!
-  deliveryAddress: Address!
+  deliveryAddress: String!
   paymentMethod: String!
   paymentStatus: PaymentStatus!
   status: OrderStatus!

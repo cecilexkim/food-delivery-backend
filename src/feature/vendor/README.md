@@ -4,13 +4,28 @@
 
 ```
 query GetNearbyVendors {
-  vendors(location: { lat: 40.7128, lng: -74.0060 }, limit: 5) {
+  vendors(
+    input: {
+      location: { latDegrees: 40.7128, lonDegrees: -74.0060 },
+      radiusMeters: 2000,
+      cuisineType: "Italian",
+      minRating: 3.0,
+      isOpenNow: true
+    },
+    pageInput: {
+      page: 1,
+      limit: 10,
+      sortBy: "rating",
+      sortOrder: DESC,
+    },
+  ) {
     data {
       id
       name
+      description
       cuisineType
-      deliveryFee
       rating
+      deliveryFee
       deliveryTime
     }
     pagination {
@@ -20,7 +35,35 @@ query GetNearbyVendors {
 }
 ```
 
-## Mutation - place an order
+## Mutation
+
+### Create a new Vendor
+
+```
+mutation CreateVendor {
+  createVendor(input: {
+    name: "Pizza Heaven",
+    description: "Authentic Italian pizzas made with love",
+    logo: "https://example.com/logo.jpg",
+    coverImage: "https://example.com/cover.jpg",
+    cuisineType: "Italian",
+    deliveryFee: 3.50,
+    minOrder: 10.00,
+    deliveryTime: "30-45 mins",
+    location: { lat: 40.7128, lng: -74.0060 },
+    address: "123 Main St, New York, NY",
+    openingHours: [
+      { day: 0, open: "11:00", close: "22:00" },
+      { day: 1, open: "11:00", close: "22:00" }
+    ]
+  }) {
+    id
+    name
+  }
+}
+```
+
+### Place an order
 
 ```
 mutation CreateOrder {
